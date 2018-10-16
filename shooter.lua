@@ -115,7 +115,7 @@ function shooter:update()
     shooter.fire = true
     if bullets.timer <= 0 then
       bullets.timer = 10
-      -- playSound(bullets.sound)
+      playSound(bullets.sound)
       table.insert(bullets, {
         x = (shooter.x - shooter.image:getWidth() / 2) + math.cos(shooter.angle) * shooter.radius,
         y = (shooter.y - shooter.image:getHeight() / 2) + math.sin(shooter.angle) * shooter.radius,
