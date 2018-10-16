@@ -18,10 +18,19 @@ shooter = {
   xOffset = 0,
   currentFrame = 1,
   fire = false,
+  width = 0,
+  height = 0,
+  widthHalf = 0,
+  heightHalf = 0,
 }
+
 shooter.frames = {}
 shooter.atlas = love.graphics.newImage('assets/shooter_atlas.png')
 shooter.sprite = love.graphics.newQuad(0, 0, 60, 60, shooter.atlas:getDimensions())
+shooter.width = shooter.image:getWidth() 
+shooter.height = shooter.image:getHeight() 
+shooter.widthHalf = shooter.width /2
+shooter.heightHalf = shooter.height /2
 
 function shooter:init()
   for frame = 1, shooter.totalFrames do
@@ -35,9 +44,9 @@ function shooter:draw()
   love.graphics.setColor(1, 1, 0)
 
   if shooter.fire == true then
-    love.graphics.draw(shooter.atlas, shooter.frames[shooter.currentFrame], shooter.x - shooter.image:getWidth() / 2, shooter.y - shooter.image:getHeight() / 2, shooter.angle - math.rad(-90), 1, 1, shooter.image:getWidth() / 2, shooter.image:getHeight() / 2)
+    love.graphics.draw(shooter.atlas, shooter.frames[shooter.currentFrame], shooter.x, shooter.y, shooter.angle - math.rad(-90), 1, 1, shooter.widthHalf, shooter.heightHalf)
   else
-    love.graphics.draw(shooter.atlas, shooter.sprite, shooter.x - shooter.image:getWidth() / 2, shooter.y - shooter.image:getHeight() / 2, shooter.angle - math.rad(-90), 1, 1, shooter.image:getWidth() / 2, shooter.image:getHeight() / 2)
+    love.graphics.draw(shooter.atlas, shooter.sprite, shooter.x, shooter.y, shooter.angle - math.rad(-90), 1, 1, shooter.widthHalf, shooter.heightHalf)
   end
 
   -- bullets creation
@@ -77,11 +86,17 @@ function shooter:update()
   --keyboard interaction
   if love.keyboard.isDown('d') then
     shooter.xVelocity = shooter.xVelocity + shooter.speed
-  elseif love.keyboard.isDown('a') then
+  end
+
+  if love.keyboard.isDown('a') then
     shooter.xVelocity = shooter.xVelocity - shooter.speed
-  elseif love.keyboard.isDown('w') then
+  end
+
+  if love.keyboard.isDown('w') then
     shooter.yVelocity = shooter.yVelocity - shooter.speed
-  elseif love.keyboard.isDown('s') then
+  end
+
+  if love.keyboard.isDown('s') then
     shooter.yVelocity= shooter.yVelocity + shooter.speed
   end
 
@@ -107,8 +122,8 @@ function shooter:update()
       table.remove(bullets, i)
     end
 
-    b.x = (b.x + math.cos(b.angle) * speed * dt)
-    b.y = (b.y + math.sin(b.angle) * speed * dt)
+    b.x = b.x + (math.cos(b.angle) * speed * dt)
+    b.y = b.y + (math.sin(b.angle) * speed * dt)
   end
   
   if love.mouse.isDown(1) then
@@ -117,8 +132,8 @@ function shooter:update()
       bullets.timer = 10
       playSound(bullets.sound)
       table.insert(bullets, {
-        x = (shooter.x - shooter.image:getWidth() / 2) + math.cos(shooter.angle) * shooter.radius,
-        y = (shooter.y - shooter.image:getHeight() / 2) + math.sin(shooter.angle) * shooter.radius,
+        x = shooter.x + math.cos(shooter.angle) * shooter.radius,
+        y = shooter.y + math.sin(shooter.angle) * shooter.radius,
         radius = 5,
         angle = shooter.angle
       })
