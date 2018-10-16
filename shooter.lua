@@ -16,19 +16,29 @@ shooter = {
   animationTimer = 1 / fps,
   totalFrames = 4,
   xOffset = 0,
-  frame = 0
+  currentFrame = 1,
+  fire = false,
 }
-
+shooter.frames = {}
 shooter.atlas = love.graphics.newImage('assets/shooter_atlas.png')
 shooter.sprite = love.graphics.newQuad(0, 0, 60, 60, shooter.atlas:getDimensions())
 
+function shooter:init()
+  for frame = 1, shooter.totalFrames do
+    shooter.frames[frame] = love.graphics.newQuad((frame - 1) * 60, 0, 60, 60, shooter.atlas:getDimensions())
+  end
+end
+
+shooter.init()
+
 function shooter:draw()
   love.graphics.setColor(1, 1, 0)
-  love.graphics.draw(shooter.atlas, shooter.sprite, shooter.x - shooter.image:getWidth() / 2, shooter.y - shooter.image:getHeight() / 2, shooter.angle - math.rad(-90), 1, 1, shooter.image:getWidth() / 2, shooter.image:getHeight() / 2)
-  -- love.graphics.circle('fill', shooter.x - shooter.image:getWidth() / 2, shooter.y - shooter.image:getHeight() / 2, shooter.radius)
-  -- shooter angle indicator
-  -- local shooterCircleDistance = 30
-  -- local shooterCircleradius = 5
+
+  if shooter.fire == true then
+    love.graphics.draw(shooter.atlas, shooter.frames[shooter.currentFrame], shooter.x - shooter.image:getWidth() / 2, shooter.y - shooter.image:getHeight() / 2, shooter.angle - math.rad(-90), 1, 1, shooter.image:getWidth() / 2, shooter.image:getHeight() / 2)
+  else
+    love.graphics.draw(shooter.atlas, shooter.sprite, shooter.x - shooter.image:getWidth() / 2, shooter.y - shooter.image:getHeight() / 2, shooter.angle - math.rad(-90), 1, 1, shooter.image:getWidth() / 2, shooter.image:getHeight() / 2)
+  end
 
   -- bullets creation
   for y = -1, 1 do
@@ -54,11 +64,15 @@ end
 
 function shooter:update()
   local dt = love.timer.getDelta()
-  local angleIndicatorSpeed = 10
   local shooterSpeed = 100
 
   bullets.timer = bullets.timer - 1
   shooter.animationTimer = shooter.animationTimer - dt
+
+  if shooter.animationTimer < 0 then
+    shooter.animationTimer = 1 / fps
+    shooter.currentFrame = shooter.currentFrame % shooter.totalFrames + 1
+  end
 
   --keyboard interaction
   if love.keyboard.isDown('d') then
@@ -97,9 +111,8 @@ function shooter:update()
     b.y = (b.y + math.sin(b.angle) * speed * dt)
   end
   
-  -- shooter.sprite:setViewport(0, 0, 60, 60)
-
   if love.mouse.isDown(1) then
+    shooter.fire = true
     if bullets.timer <= 0 then
       bullets.timer = 10
       -- playSound(bullets.sound)
@@ -108,29 +121,9 @@ function shooter:update()
         y = (shooter.y - shooter.image:getHeight() / 2) + math.sin(shooter.angle) * shooter.radius,
         radius = 5,
         angle = shooter.angle
-      }) 
-
-      for i = 0, shooter.totalFrames do
-        shooter.frame = shooter.frame + i + 1
-        shooter.sprite:setViewport(60 * shooter.frame, 0, 60, 60)
-
-        if i >= shooter.totalFrames then
-          shooter.sprite:setViewport(0, 0, 60, 60)
-        end
-      end
-
-      -- if shooter.animationTimer <= 0 then
-      --   shooter.animationTimer = 1 / fps
-      --   shooter.frame = shooter.frame + 1
-
-      --   if shooter.frame >= shooter.totalFrames then
-      --     shooter.frame = 0
-      --   end
-
-      --   shooter.xOffset = 60 * shooter.frame
-
-      --   shooter.sprite:setViewport(shooter.xOffset, 0, 60, 60)
-      -- end
+      })
     end
+  else
+    shooter.fire = false
   end
 end
