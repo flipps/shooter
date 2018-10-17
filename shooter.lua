@@ -25,6 +25,7 @@ shooter = {
 }
 
 shooter.frames = {}
+
 shooter.atlas = love.graphics.newImage('assets/shooter_atlas.png')
 shooter.sprite = love.graphics.newQuad(0, 0, 60, 60, shooter.atlas:getDimensions())
 shooter.width = shooter.image:getWidth() 
@@ -71,8 +72,7 @@ function shooter:draw()
   -- },'\n'), 10, 10)
 end
 
-function shooter:update()
-  local dt = love.timer.getDelta()
+function shooter:update(dt)
   local shooterSpeed = 100
 
   bullets.timer = bullets.timer - 1

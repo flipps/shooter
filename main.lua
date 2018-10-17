@@ -7,9 +7,9 @@ function love.load()
 end
 
 function love.update(dt)
-  shooter.update()
+  shooter:update(dt)
 end
 
 function love.draw()
-  shooter.draw()
+  shooter:draw()
 end
