@@ -1,4 +1,5 @@
 require 'shooter'
+require 'enemy'
 
 function love.load()
   ambienceSound = love.audio.newSource('assets/And-the-Machines-Came-at-Midnight.mp3', 'static')

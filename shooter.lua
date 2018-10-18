@@ -30,8 +30,8 @@ shooter.atlas = love.graphics.newImage('assets/shooter_atlas.png')
 shooter.sprite = love.graphics.newQuad(0, 0, 60, 60, shooter.atlas:getDimensions())
 shooter.width = shooter.image:getWidth() 
 shooter.height = shooter.image:getHeight() 
-shooter.widthHalf = shooter.width /2
-shooter.heightHalf = shooter.height /2
+shooter.widthHalf = shooter.width / 2
+shooter.heightHalf = shooter.height / 2
 
 function shooter:init()
   for frame = 1, shooter.totalFrames do
@@ -54,8 +54,9 @@ function shooter:draw()
   for y = -1, 1 do
     for x = -1, 1 do
       for i,b in ipairs(bullets) do
-        love.graphics.setColor(1, 0, 0)
-        love.graphics.circle('fill', b.x, b.y, b.radius)
+        -- love.graphics.setColor(1, 0, 0)
+        love.graphics.draw(bullets.image, b.x, b.y, shooter.angle - math.rad(90))
+        -- love.graphics.circle('fill', b.x, b.y, b.radius)
       end
     end
   end
@@ -73,8 +74,6 @@ function shooter:draw()
 end
 
 function shooter:update(dt)
-  local shooterSpeed = 100
-
   bullets.timer = bullets.timer - 1
   shooter.animationTimer = shooter.animationTimer - dt
 
