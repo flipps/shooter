@@ -7,3 +7,6 @@ to run it:
     export PATH=$PATH:/Applications/love.app/Contents/MacOS/
 - And then from the `main.lua` folder run the command `love .`
 
+
+Soundtrack can can be found here: https://soundimage.org/
+
