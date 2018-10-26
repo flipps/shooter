@@ -1,7 +1,9 @@
 require 'bullets'
 require 'utils'
+require 'enemy'
 
 local fps = 24
+local sqrt = math.sqrt
 
 shooter = {
   x = love.graphics.getWidth() / 2,
@@ -38,6 +40,8 @@ function shooter:init()
   for frame = 1, shooter.totalFrames do
     shooter.frames[frame] = love.graphics.newQuad((frame - 1) * 60, 0, 60, 60, shooter.atlas:getDimensions())
   end
+
+  enemy_controller:create(math.random(0, 700), math.random(0, 500), 50, 100)
 end
 
 shooter.init()
@@ -60,7 +64,11 @@ function shooter:draw()
     end
   end
 
+  -- enemies
+  enemy_controller:draw()
   -- Debbug
+  -- love.graphics.setColor(1, 1, 1)
+  -- love.graphics.print('Enemy angle: '.. enemy.angle)
   -- love.graphics.origin()
   -- love.graphics.setColor(1, 0, 0)
   -- love.graphics.print(table.concat({
@@ -124,6 +132,22 @@ function shooter:update(dt)
     b.y = b.y + (math.sin(b.angle) * speed * dt)
   end
   
+  -- Enemies pos
+  for i,enemy in ipairs(enemy_controller.enemies) do
+    -- enemy.dx = shooter.x - enemy.x
+    -- enemy.dy = shooter.y - enemy.y
+    -- local distance = sqrt(dx * dx + dy * dy)
+
+    -- enemy.x = enemy.x + (enemy.dx / distance * enemy.speed * dt)
+    -- enemy.y = enemy.y + (enemy.dy / distance * enemy.speed * dt)
+
+    enemy.angle = math.atan2((enemy.y - shooter.y), (enemy.x - shooter.x))
+
+    enemy.x = enemy.x - (math.cos(enemy.angle) * enemy.speed * dt)
+    enemy.y = enemy.y - (math.sin(enemy.angle) * enemy.speed * dt)
+  end
+
+  -- Mouse controls
   if love.mouse.isDown(1) then
     shooter.fire = true
     if bullets.timer <= 0 then

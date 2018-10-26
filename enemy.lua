@@ -9,8 +9,10 @@ function enemy_controller:create(_x, _y, _w, _h)
   enemy.y = _y
   enemy.width = _w
   enemy.height = _h
-  enemy.radius = 10
+  enemy.radius = 50
   enemy.segments = 20
+  enemy.health = 100
+  enemy.speed = 100
 
   insert(enemy_controller.enemies, enemy)
 end
