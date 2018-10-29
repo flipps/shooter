@@ -4,6 +4,8 @@ require 'enemy'
 
 local fps = 24
 local sqrt = math.sqrt
+local insert = table.insert
+local remove = table.remove
 
 shooter = {
   x = love.graphics.getWidth() / 2,
@@ -37,13 +39,14 @@ shooter.widthHalf = shooter.width / 2
 shooter.heightHalf = shooter.height / 2
 
 referenceEnemyAngle = 0
+health = 100
 
 function shooter:init()
   for frame = 1, shooter.totalFrames do
     shooter.frames[frame] = love.graphics.newQuad((frame - 1) * 60, 0, 60, 60, shooter.atlas:getDimensions())
   end
 
-  enemy_controller:create(math.random(0, 700), math.random(0, 500), 50, 100)
+  enemy_controller:create(math.random(0, 700), math.random(0, 500), 100, 100)
 end
 
 shooter.init()
@@ -67,8 +70,8 @@ function shooter:draw()
   end
 
   -- enemies
-  enemy_controller:draw(referenceEnemyAngle + math.rad(90))
-  
+  enemy_controller:draw(referenceEnemyAngle + math.rad(90), health)
+
   -- Debbug
   -- love.graphics.setColor(1, 1, 1)
   -- love.graphics.print('Enemy angle: '.. enemy.angle)
@@ -126,9 +129,9 @@ function shooter:update(dt)
     
     -- removed bullets that are out of screen boundries
     if b.x > love.graphics.getWidth() or b.x < 0 then
-      table.remove(bullets, i)
+      remove(bullets, i)
     elseif b.y > love.graphics.getHeight() or b.y < 0 then
-      table.remove(bullets, i)
+      remove(bullets, i)
     end
 
     b.x = b.x + (math.cos(b.angle) * speed * dt)
@@ -146,17 +149,36 @@ function shooter:update(dt)
   -- Mouse controls
   if love.mouse.isDown(1) then
     shooter.fire = true
+
     if bullets.timer <= 0 then
       bullets.timer = 10
-      playSound(bullets.sound)
-      table.insert(bullets, {
+      -- playSound(bullets.sound)
+      insert(bullets, {
         x = shooter.x + math.cos(shooter.angle) * shooter.radius,
         y = shooter.y + math.sin(shooter.angle) * shooter.radius,
         radius = 5,
+        width = 5,
+        height = 5,
         angle = shooter.angle
       })
     end
   else
     shooter.fire = false
+  end
+
+  -- Bullets / enemy collision
+  -- ax, ay, bx, by, ar, br
+  for i,bullet in ipairs(bullets) do
+    for j,enemy in ipairs(enemy_controller.enemies) do
+      -- ax, ay, bx, by, ar, br
+      if checkBulletEnemyCollision(bullet.x, bullet.y, enemy.x, enemy.y, bullet.radius, enemy.radius) then
+        remove(bullets, i)
+        health = health - 1
+        if health <= 0 then
+          health = 0
+          remove(enemy_controller.enemies, i)
+        end
+      end
+    end
   end
 end
