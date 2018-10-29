@@ -36,6 +36,8 @@ shooter.height = shooter.image:getHeight()
 shooter.widthHalf = shooter.width / 2
 shooter.heightHalf = shooter.height / 2
 
+referenceEnemyAngle = 0
+
 function shooter:init()
   for frame = 1, shooter.totalFrames do
     shooter.frames[frame] = love.graphics.newQuad((frame - 1) * 60, 0, 60, 60, shooter.atlas:getDimensions())
@@ -65,7 +67,8 @@ function shooter:draw()
   end
 
   -- enemies
-  enemy_controller:draw()
+  enemy_controller:draw(referenceEnemyAngle + math.rad(90))
+  
   -- Debbug
   -- love.graphics.setColor(1, 1, 1)
   -- love.graphics.print('Enemy angle: '.. enemy.angle)
@@ -134,15 +137,8 @@ function shooter:update(dt)
   
   -- Enemies pos
   for i,enemy in ipairs(enemy_controller.enemies) do
-    -- enemy.dx = shooter.x - enemy.x
-    -- enemy.dy = shooter.y - enemy.y
-    -- local distance = sqrt(dx * dx + dy * dy)
-
-    -- enemy.x = enemy.x + (enemy.dx / distance * enemy.speed * dt)
-    -- enemy.y = enemy.y + (enemy.dy / distance * enemy.speed * dt)
-
     enemy.angle = math.atan2((enemy.y - shooter.y), (enemy.x - shooter.x))
-
+    referenceEnemyAngle = enemy.angle
     enemy.x = enemy.x - (math.cos(enemy.angle) * enemy.speed * dt)
     enemy.y = enemy.y - (math.sin(enemy.angle) * enemy.speed * dt)
   end

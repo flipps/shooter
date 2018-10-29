@@ -13,13 +13,19 @@ function enemy_controller:create(_x, _y, _w, _h)
   enemy.segments = 20
   enemy.health = 100
   enemy.speed = 100
+  enemy.image = love.graphics.newImage('assets/boss.png')
+  enemy.angle = 0
+  enemy.halfWidth = enemy.image:getWidth() / 2
+  enemy.halfHeight = enemy.image:getHeight() / 2
 
   insert(enemy_controller.enemies, enemy)
 end
 
-function enemy_controller:draw()
+function enemy_controller:draw(angle)
   for i,enemy in ipairs(enemy_controller.enemies) do
+    enemy.angle = angle
+
     love.graphics.setColor(1, 1, 1)
-    love.graphics.circle('line', enemy.x, enemy.y, enemy.width, enemy.height, enemy.radius, enemy.segments)
+    love.graphics.draw(enemy.image, enemy.x, enemy.y, enemy.angle, 1, 1, enemy.halfWidth, enemy.halfHeight)
   end
 end
