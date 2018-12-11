@@ -1,11 +1,13 @@
 require 'bullets'
 require 'utils'
 require 'enemy'
+local moonshine = require 'moonshine'
 
 local fps = 24
 local sqrt = math.sqrt
 local insert = table.insert
 local remove = table.remove
+local fx
 
 shooter = {
   x = love.graphics.getWidth() / 2,
@@ -22,8 +24,6 @@ shooter = {
   xOffset = 0,
   currentFrame = 1,
   fire = false,
-  width = 0,
-  height = 0,
   widthHalf = 0,
   heightHalf = 0,
   health = 150,
@@ -42,6 +42,9 @@ referenceEnemyAngle = 0
 health = 100
 
 function shooter:init()
+  fx = moonshine(moonshine.effects.godsray)
+  fx.disable('godsray')
+
   for frame = 1, shooter.totalFrames do
     shooter.frames[frame] = love.graphics.newQuad((frame - 1) * 60, 0, 60, 60, shooter.atlas:getDimensions())
   end
@@ -49,16 +52,29 @@ function shooter:init()
   enemy_controller:create(math.random(0, 700), math.random(0, 500), 100, 100)
 end
 
+function resetGame()
+  for i,enemy in ipairs(enemy_controller.enemies, enemy) do
+    remove(enemy_controller.enemies, i)
+    enemy_controller:create(math.random(0, 700), math.random(0, 500), 100, 100)
+    shooter.health = 150
+    health = 100
+  end
+end
+
 shooter.init()
 
 function shooter:draw()
   love.graphics.setColor(1, 1, 0)
 
-  if shooter.fire == true then
-    love.graphics.draw(shooter.atlas, shooter.frames[shooter.currentFrame], shooter.x, shooter.y, shooter.angle - math.rad(-90), 1, 1, shooter.widthHalf, shooter.heightHalf)
-  else
-    love.graphics.draw(shooter.atlas, shooter.sprite, shooter.x, shooter.y, shooter.angle - math.rad(-90), 1, 1, shooter.widthHalf, shooter.heightHalf)
-  end
+  fx(
+    function()
+      if shooter.fire == true then
+        love.graphics.draw(shooter.atlas, shooter.frames[shooter.currentFrame], shooter.x, shooter.y, shooter.angle - math.rad(-90), 1, 1, shooter.widthHalf, shooter.heightHalf)
+      else
+        love.graphics.draw(shooter.atlas, shooter.sprite, shooter.x, shooter.y, shooter.angle - math.rad(-90), 1, 1, shooter.widthHalf, shooter.heightHalf)
+      end
+    end
+  )
 
   -- bullets creation
   for y = -1, 1 do
@@ -149,6 +165,7 @@ function shooter:update(dt)
   -- Mouse controls
   if love.mouse.isDown(1) then
     shooter.fire = true
+    fx.enable('godsray')
 
     if bullets.timer <= 0 then
       bullets.timer = 10
@@ -164,10 +181,10 @@ function shooter:update(dt)
     end
   else
     shooter.fire = false
+    fx.disable('godsray')
   end
 
   -- Bullets / enemy collision
-  -- ax, ay, bx, by, ar, br
   for i,bullet in ipairs(bullets) do
     for j,enemy in ipairs(enemy_controller.enemies) do
       -- ax, ay, bx, by, ar, br
@@ -177,8 +194,21 @@ function shooter:update(dt)
         if health <= 0 then
           health = 0
           remove(enemy_controller.enemies, i)
+          -- add particles
         end
       end
     end
   end
+
+  -- Hero / Enemy collision
+  for k,enemy in ipairs(enemy_controller.enemies) do
+    if checkBulletEnemyCollision(shooter.x, shooter.y, enemy.x, enemy.y, shooter.radius, enemy.radius) then
+      shooter.health = shooter.health - 1
+      if shooter.health <= 0 then
+        shooter.health = 0
+        resetGame()
+      end
+    end
+  end
+
 end
