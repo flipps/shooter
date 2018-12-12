@@ -11,9 +11,12 @@ end
 
 function love.update(dt)
   shooter:update(dt)
-  
 end
 
 function love.draw()
-  shooter:draw()
+  effect(
+    function()
+      shooter:draw()
+    end
+  )
 end

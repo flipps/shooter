@@ -88,6 +88,18 @@ function shooter:draw()
   -- enemies
   enemy_controller:draw(referenceEnemyAngle + math.rad(90), health)
 
+  -- shooter health bar
+  if shooter.health >= shooter.health then
+    love.graphics.setColor(0, 1, 0)
+    love.graphics.rectangle('fill', 20, 20, shooter.health, 10)
+  end
+
+  if shooter.health < 75 then
+    print(shooter.health)
+    love.graphics.setColor(1, 0, 0)
+    love.graphics.rectangle('fill', 20, 20, shooter.health, 10)
+  end
+
   -- Debbug
   -- love.graphics.setColor(1, 1, 1)
   -- love.graphics.print('Enemy angle: '.. enemy.angle)
