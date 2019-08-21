@@ -1,4 +1,4 @@
-# This is an attempt to create a Roguelike game written in lua using Love2d framework.
+# This is an attempt to create a game written in lua using Love2d framework.
 to run it:
 
 - Check if you have lua installed on your machine, if not, get it at: https://www.lua.org/download.html
